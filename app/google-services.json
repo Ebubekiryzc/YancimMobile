@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "1029553036360",
+    "firebase_url": "https://yancimmobile-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "yancimmobile",
+    "storage_bucket": "yancimmobile.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029553036360:android:5d8f2a6a3ef73f8a52cc7d",
+        "android_client_info": {
+          "package_name": "tr.edu.duzce.mf.bm.yancim"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1029553036360-5sh8emaq743t31filkhjo1emcobg10ma.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3IZnUrQB_0mSJQzRrgnFzGebuVNEiasQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029553036360-5sh8emaq743t31filkhjo1emcobg10ma.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029553036360:android:2ff57493e500c53852cc7d",
+        "android_client_info": {
+          "package_name": "tr.edu.duzce.mf.bm.yancimmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1029553036360-5sh8emaq743t31filkhjo1emcobg10ma.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3IZnUrQB_0mSJQzRrgnFzGebuVNEiasQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029553036360-5sh8emaq743t31filkhjo1emcobg10ma.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
