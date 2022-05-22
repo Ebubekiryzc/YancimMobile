@@ -14,11 +14,15 @@
         android:theme="@style/Theme.YancimMobile"
         tools:targetApi="31">
         <activity
+            android:name=".activity.DashboardActivity"
+            android:exported="true" />
+        <activity
             android:name=".activity.SignActivity"
             android:exported="true"
             android:theme="@style/AppTheme.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

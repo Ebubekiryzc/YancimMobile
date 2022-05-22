@@ -4,8 +4,18 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.121" />
+        <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/drawable/ic_day.xml" value="0.1695" />
         <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/drawable/ic_launcher_background.xml" value="0.121" />
-        <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/layout/activity_sign.xml" value="0.264" />
+        <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/drawable/ic_night.xml" value="0.121" />
+        <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/drawable/ic_signout.xml" value="0.121" />
+        <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/drawable/light_ellipse_background.xml" value="0.1" />
+        <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/drawable/white_edit_text.xml" value="0.127" />
+        <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/layout/activity_dashboard.xml" value="0.25" />
+        <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/layout/activity_sign.xml" value="0.4" />
+        <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/layout/appbar.xml" value="0.24895833333333334" />
+        <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/layout/custom_list_item.xml" value="0.25" />
+        <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/layout/element_game_type.xml" value="0.10989583333333333" />
+        <entry key="..\:/Users/EbubekirPC/Desktop/Projects/YancimMobile/app/src/main/res/menu/toolbar_menu.xml" value="0.1" />
       </map>
     </option>
   </component>

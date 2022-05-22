@@ -1,13 +1,22 @@
 package tr.edu.duzce.mf.bm.yancimmobile.activity;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.splashscreen.SplashScreen;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +31,8 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 
 import tr.edu.duzce.mf.bm.yancimmobile.R;
 
+// TODO: Signup mode ilk olarak açılıyor. Bu değişebilir, ilk login gelebilir.
+// TODO: İzin istenmesi gerekiyor.
 public class SignActivity extends AppCompatActivity {
 
     private static final String TAG = SignActivity.class.getSimpleName();
@@ -32,7 +43,11 @@ public class SignActivity extends AppCompatActivity {
 
     private FirebaseAuth authManager;
 
-    private boolean isSignUpMode = true;
+    private SharedPreferences sharedPreferences;
+
+    private static final String DARK_MODE_PREFERENCE = "dark_mode_preference";
+    private boolean isSignUpMode = false;
+    private boolean isDarkMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +57,7 @@ public class SignActivity extends AppCompatActivity {
         initComponents();
         changeMode();
         registerEventHandlers();
+        setCurrentTheme(isDarkMode);
     }
 
 
@@ -54,6 +70,55 @@ public class SignActivity extends AppCompatActivity {
         updateUI(currentUser, false);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        int iconId = getCurrentIcon();
+
+        MenuItem darkModeButton = menu.add("darkModeButton");
+        darkModeButton.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        darkModeButton.setIcon(iconId);
+
+        darkModeButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                isDarkMode = !isDarkMode;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(DARK_MODE_PREFERENCE, isDarkMode);
+                editor.apply();
+
+                setCurrentTheme(isDarkMode);
+
+                int iconId = getCurrentIcon();
+
+                menuItem.setIcon(iconId);
+                return true;
+            }
+        });
+
+//        MenuItem signOut = menu.add("logout");
+//        signOut.setTitle(R.string.logout);
+//        signOut.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private int getCurrentIcon() {
+        int iconId;
+        if (isDarkMode) {
+            iconId = R.drawable.ic_day;
+        } else {
+            iconId = R.drawable.ic_night;
+        }
+        return iconId;
+    }
+
+    private void setCurrentTheme(boolean isDarkMode) {
+        if (isDarkMode) {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+    }
 
     private void updateUI(FirebaseUser user, Boolean verbose) {
         if (user != null) {
@@ -63,12 +128,11 @@ public class SignActivity extends AppCompatActivity {
                 Toast.makeText(SignActivity.this, String.format("%s, %s",
                         SignActivity.this.getResources().getText(R.string.login_successful),
                         user.getDisplayName()), Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(SignActivity.this, DashboardActivity.class);
+            intent.putExtra("user", user);
+            startActivity(intent);
         }
-//        if (user != null) {
-//            Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
-//            intent.putExtra("user", user);
-//            startActivity(intent);
-//        }
     }
 
     private void initComponents() {
@@ -80,6 +144,9 @@ public class SignActivity extends AppCompatActivity {
         emailWrapper = findViewById(R.id.signEmail);
         passwordWrapper = findViewById(R.id.signPassword);
         submitButton = findViewById(R.id.signSubmitButton);
+
+        sharedPreferences = getSharedPreferences("common_preferences", MODE_PRIVATE);
+        isDarkMode = sharedPreferences.getBoolean(DARK_MODE_PREFERENCE, false);
 
         cleanInputs();
     }

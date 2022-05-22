@@ -18,4 +18,11 @@
         <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
         <item name="postSplashScreenTheme">@style/Theme.YancimMobile</item>
     </style>
+
+    <style name="ExposedDropdownMenu" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxStrokeColor">#fff</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="android:textColorHint">@color/primaryTextColor</item>
+        <item name="endIconTint">@color/primaryDarkColor</item>
+    </style>
 </resources>
