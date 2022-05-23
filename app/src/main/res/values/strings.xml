@@ -21,4 +21,16 @@
     <string name="game_types">Oyun Türleri</string>
     <string name="rooms">Odalar</string>
     <string name="see_all">Tümünü Gör</string>
+    <string name="new_game_type_hint">Oyun Tipi Adı</string>
+    <string name="select_image">Resim Ekle</string>
+    <string name="add">Kaydet</string>
+    <string name="create_game_type_text">Oyun Tipi Ekle</string>
+    <string name="create_room_text">Oda oluştur</string>
+    <string name="cancel">İptal</string>
+    <string name="imageRationaleText">Fotoğraf ekleyebilmeniz için izin vermeniz gerekiyor.</string>
+    <string name="selected_text">Seçildi</string>
+    <string name="loading_text">Yükleniyor...</string>
+    <string name="upload_successful">Dosya başarıyla yüklendi.</string>
+    <string name="upload_failed">Dosya yüklenemedi.</string>
+    <string name="game_type_added_successfully">Oyun tipi başarıyla eklendi.</string>
 </resources>

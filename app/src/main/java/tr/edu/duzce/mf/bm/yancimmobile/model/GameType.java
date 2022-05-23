@@ -1,30 +1,23 @@
 package tr.edu.duzce.mf.bm.yancimmobile.model;
 
 public class GameType {
-    private long id;
-    private int drawableId;
+    private String image;
     private String name;
 
-    public GameType(long id, int drawableId, String name) {
-        this.id = id;
-        this.drawableId = drawableId;
+    public GameType() {
+    }
+
+    public GameType(String image, String name) {
+        this.image = image;
         this.name = name;
     }
 
-    public long getId() {
-        return id;
+    public String getImage() {
+        return image;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public int getDrawableId() {
-        return drawableId;
-    }
-
-    public void setDrawableId(int drawableId) {
-        this.drawableId = drawableId;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getName() {

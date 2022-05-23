@@ -1,5 +1,6 @@
 package tr.edu.duzce.mf.bm.yancimmobile.adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 import tr.edu.duzce.mf.bm.yancimmobile.R;
@@ -17,8 +20,10 @@ import tr.edu.duzce.mf.bm.yancimmobile.model.GameType;
 public class GameTypeAdapter extends RecyclerView.Adapter<GameTypeAdapter.GameTypeAdapterViewHolder> {
 
     private List<GameType> gameTypes;
+    private Context context;
 
-    public GameTypeAdapter(List<GameType> gameTypes) {
+    public GameTypeAdapter(Context context, List<GameType> gameTypes) {
+        this.context = context;
         this.gameTypes = gameTypes;
     }
 
@@ -32,7 +37,8 @@ public class GameTypeAdapter extends RecyclerView.Adapter<GameTypeAdapter.GameTy
     public void onBindViewHolder(@NonNull GameTypeAdapterViewHolder holder, int position) {
         GameType gameType = gameTypes.get(position);
         holder.textView.setText(gameType.getName());
-        holder.imageView.setImageResource(gameType.getDrawableId());
+
+        Glide.with(context).load(gameType.getImage()).into(holder.imageView);
     }
 
     @Override

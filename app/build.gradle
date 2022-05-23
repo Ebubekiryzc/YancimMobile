@@ -31,9 +31,19 @@ android {
 dependencies {
     implementation platform('com.google.firebase:firebase-bom:30.0.2')
 
+    // Firebase
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-core'
     implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.firebase:firebase-storage'
+
+    // Custom from lessons
+    implementation 'co.dift.ui.swipetoaction:library:1.1'
+    implementation 'com.github.clans:fab:1.6.4'
+
+    // Custom
+    implementation 'com.github.bumptech.glide:glide:4.13.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
 
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.6.0'

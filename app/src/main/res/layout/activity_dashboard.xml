@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dashboardLayout"
     android:layout_width="match_parent"
@@ -140,5 +141,55 @@
             android:layout_marginEnd="@dimen/big_margin" />
 
     </LinearLayout>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/floatingMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/default_margin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        fab:menu_animationDelayPerItem="0"
+        fab:menu_colorNormal="@color/secondaryColor"
+        fab:menu_colorPressed="@color/secondaryLightColor"
+        fab:menu_colorRipple="@color/secondaryDarkColor"
+        fab:menu_fab_label="İptal"
+        fab:menu_icon="@drawable/fab_add"
+        fab:menu_labels_ellipsize="end"
+        fab:menu_labels_singleLine="true">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/gameTypeCreateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_game_type"
+            fab:fab_colorNormal="@color/secondaryColor"
+            fab:fab_colorPressed="@color/secondaryLightColor"
+            fab:fab_colorRipple="@color/secondaryDarkColor"
+            fab:fab_label="@string/create_game_type_text"
+            fab:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/roomCreateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_room"
+            fab:fab_colorNormal="@color/secondaryColor"
+            fab:fab_colorPressed="@color/secondaryLightColor"
+            fab:fab_colorRipple="@color/secondaryDarkColor"
+            fab:fab_label="@string/create_room_text"
+            fab:fab_size="mini" />
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+    <ProgressBar
+        android:id="@+id/dashboardProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
