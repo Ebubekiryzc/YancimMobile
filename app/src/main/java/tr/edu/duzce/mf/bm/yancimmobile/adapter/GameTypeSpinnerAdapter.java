@@ -51,7 +51,14 @@ public class GameTypeSpinnerAdapter extends BaseAdapter {
         ImageView imageView = rootView.findViewById(R.id.gameTypeSpinnerImage);
 
         textView.setText(gameType.getName());
-        Glide.with(context).load(gameType.getImage()).into(imageView);
+
+        if (gameType.getImage() != null) {
+            imageView.setColorFilter(null);
+            Glide.with(context).load(gameType.getImage()).into(imageView);
+        } else {
+            imageView.setColorFilter(R.color.primaryLightColor);
+            imageView.setImageResource(R.drawable.ic_no_image);
+        }
 
         return rootView;
     }
