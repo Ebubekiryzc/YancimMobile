@@ -12,4 +12,7 @@
     <dimen name="huge_margin">48dp</dimen>
     <dimen name="big_padding">32dp</dimen>
     <dimen name="default_margin">16dp</dimen>
+    <dimen name="small_margin">8dp</dimen>
+    <dimen name="icon_width">32dp</dimen>
+    <dimen name="icon_height">32dp</dimen>
 </resources>

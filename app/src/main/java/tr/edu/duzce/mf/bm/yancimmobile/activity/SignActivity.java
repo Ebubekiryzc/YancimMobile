@@ -2,11 +2,9 @@ package tr.edu.duzce.mf.bm.yancimmobile.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -15,12 +13,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.core.splashscreen.SplashScreen;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
@@ -28,8 +24,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import tr.edu.duzce.mf.bm.yancimmobile.R;
+import tr.edu.duzce.mf.bm.yancimmobile.model.User;
 
 // TODO: Signup mode ilk olarak açılıyor. Bu değişebilir, ilk login gelebilir.
 // TODO: İzin istenmesi gerekiyor.
@@ -42,10 +44,14 @@ public class SignActivity extends AppCompatActivity {
     private MaterialButton submitButton;
 
     private FirebaseAuth authManager;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference usersReference;
 
     private SharedPreferences sharedPreferences;
 
     private static final String DARK_MODE_PREFERENCE = "dark_mode_preference";
+    private static final String USER_PATH = "users";
+
     private boolean isSignUpMode = false;
     private boolean isDarkMode;
 
@@ -65,9 +71,21 @@ public class SignActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = authManager.getCurrentUser();
+        if (currentUser != null) {
+            usersReference.child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    User snapshotValue = snapshot.getValue(User.class);
+                    // Buradaki verbose parametresi false, çünkü kullanıcı uygulamayı açtığı anda otomatik giriş yapıyorsa neden ekrana mesaj basalım ki?
+                    updateUI(snapshotValue, false);
+                }
 
-        // Buradaki verbose parametresi false, çünkü kullanıcı uygulamayı açtığı anda otomatik giriş yapıyorsa neden ekrana mesaj basalım ki?
-        updateUI(currentUser, false);
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
 
     @Override
@@ -120,14 +138,14 @@ public class SignActivity extends AppCompatActivity {
         }
     }
 
-    private void updateUI(FirebaseUser user, Boolean verbose) {
+    private void updateUI(User user, Boolean verbose) {
         if (user != null) {
 
             // verbose yani detay gösterilsin mi parametresi true olarak verilirse ekrana mesaj basılır.
             if (verbose)
                 Toast.makeText(SignActivity.this, String.format("%s, %s",
                         SignActivity.this.getResources().getText(R.string.login_successful),
-                        user.getDisplayName()), Toast.LENGTH_SHORT).show();
+                        user.getUsername()), Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent(SignActivity.this, DashboardActivity.class);
             intent.putExtra("user", user);
@@ -137,6 +155,8 @@ public class SignActivity extends AppCompatActivity {
 
     private void initComponents() {
         authManager = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        usersReference = firebaseDatabase.getReference().getRef().child(USER_PATH);
 
         currentModeText = findViewById(R.id.currentModeText);
         changeModeTextButton = findViewById(R.id.changeModeText);
@@ -265,24 +285,32 @@ public class SignActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = authManager.getCurrentUser();
+                            User userToDatabase = new User(user.getEmail(), username, "user");
 
-                            // Task başarılı ise yani kullanıcı kaydedildi ise:
-                            UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(username)
-                                    .build();
+                            usersReference.child(user.getUid()).setValue(userToDatabase).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
 
-                            // Kullanıcının displayName özelliğini username ile eşitliyoruz:
-                            user.updateProfile(userProfileChangeRequest)
-                                    // Kullanıcı asenkron olarak güncellendiği için bir complete listener ekliyoruz
-                                    // Bu sayede updateUI kısmına user'ı yolladığımızda, kullanıcının username alanı henüz doldurulmamış olmuyor.
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                updateUI(user, true);
-                                            }
-                                        }
-                                    });
+                                    // Task başarılı ise yani kullanıcı kaydedildi ise:
+                                    UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
+                                            .setDisplayName(username)
+                                            .build();
+
+                                    // Kullanıcının displayName özelliğini username ile eşitliyoruz:
+                                    user.updateProfile(userProfileChangeRequest)
+                                            // Kullanıcı asenkron olarak güncellendiği için bir complete listener ekliyoruz
+                                            // Bu sayede updateUI kısmına user'ı yolladığımızda, kullanıcının username alanı henüz doldurulmamış olmuyor.
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        updateUI(userToDatabase, true);
+                                                    }
+                                                }
+                                            });
+                                }
+                            });
+
                         } else {
                             Log.w(TAG, SignActivity.this.getResources().getString(R.string.signup_failed), task.getException());
                             Toast.makeText(SignActivity.this, SignActivity.this.getResources().getString(R.string.signup_failed), Toast.LENGTH_SHORT).show();
@@ -302,7 +330,18 @@ public class SignActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = authManager.getCurrentUser();
-                            updateUI(user, true);
+                            usersReference.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    User snapshotValue = snapshot.getValue(User.class);
+                                    updateUI(snapshotValue, true);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
                         } else {
                             Log.w(TAG, SignActivity.this.getResources().getString(R.string.signin_failed), task.getException());
                             Toast.makeText(SignActivity.this, SignActivity.this.getResources().getString(R.string.signin_failed), Toast.LENGTH_SHORT).show();

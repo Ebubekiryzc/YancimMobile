@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,10 +27,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.load.model.Model;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -54,7 +53,11 @@ import java.util.UUID;
 
 import tr.edu.duzce.mf.bm.yancimmobile.R;
 import tr.edu.duzce.mf.bm.yancimmobile.adapter.GameTypeAdapter;
+import tr.edu.duzce.mf.bm.yancimmobile.adapter.GameTypeSpinnerAdapter;
+import tr.edu.duzce.mf.bm.yancimmobile.helpers.abstracts.ItemClickListener;
 import tr.edu.duzce.mf.bm.yancimmobile.model.GameType;
+import tr.edu.duzce.mf.bm.yancimmobile.model.Room;
+import tr.edu.duzce.mf.bm.yancimmobile.model.User;
 
 // TODO: Bütün itemlerde dön isme göre öyle sorgula.
 // TODO: Resim yüklemesini kontrol et, bitince kaydet çalışsın.
@@ -63,11 +66,13 @@ public class DashboardActivity extends AppCompatActivity {
     private static final String TAG = DashboardActivity.class.getSimpleName();
 
     private TextView username;
-    private TextInputLayout selectCityTextInputLayout;
     private RecyclerView gameTypeRecyclerView, roomRecyclerView;
     private FloatingActionButton roomCreateButton, gameTypeCreateButton;
     private LinearLayout mainLayout;
-    private ProgressBar progressBar;
+    private ProgressBar gameTypeProgressBar;
+
+    private User user;
+    private FirebaseUser firebaseUser;
 
     // Burası açılacak modallardaki değişkenleri tutmak için kullanılan değişkenler
     private TextInputLayout gameTypeNameWrapper;
@@ -93,9 +98,11 @@ public class DashboardActivity extends AppCompatActivity {
 
     // Tüm oyun tipi ve odaları tutan referanslar:
     private List<GameType> gameTypes;
+    private List<Room> rooms;
 
     // Adapters
     private GameTypeAdapter gameTypeAdapter;
+    private GameTypeSpinnerAdapter gameTypeSpinnerAdapter;
 
 
     private SharedPreferences sharedPreferences;
@@ -121,7 +128,14 @@ public class DashboardActivity extends AppCompatActivity {
         gameTypeRecyclerView.setLayoutManager(linearLayoutManager);
 
         gameTypes = new ArrayList<>();
-        gameTypeAdapter = new GameTypeAdapter(DashboardActivity.this, gameTypes);
+        ItemClickListener itemClickListener = new ItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Toast.makeText(DashboardActivity.this, gameTypes.get(position).getName() + "TIKLANDI", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        gameTypeAdapter = new GameTypeAdapter(DashboardActivity.this, gameTypes, itemClickListener);
         gameTypeRecyclerView.setAdapter(gameTypeAdapter);
 
         gameTypePath.addValueEventListener(new ValueEventListener() {
@@ -215,11 +229,9 @@ public class DashboardActivity extends AppCompatActivity {
     private void initComponents() {
         // Aktivite değişkenleri
         username = findViewById(R.id.username);
-        selectCityTextInputLayout = findViewById(R.id.selectCityTextInput);
         gameTypeRecyclerView = findViewById(R.id.gameTypesRecyclerView);
         roomRecyclerView = findViewById(R.id.roomRecyclerView);
         mainLayout = findViewById(R.id.mainDashboard);
-        progressBar = findViewById(R.id.dashboardProgressBar);
         roomCreateButton = findViewById(R.id.roomCreateButton);
         gameTypeCreateButton = findViewById(R.id.gameTypeCreateButton);
 
@@ -236,8 +248,14 @@ public class DashboardActivity extends AppCompatActivity {
         setMainDashboardColor();
 
         Intent intent = getIntent();
-        FirebaseUser user = intent.getParcelableExtra("user");
-        username.setText(user.getDisplayName());
+        User user = (User) intent.getSerializableExtra("user");
+        username.setText(user.getUsername());
+
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user.getRole().equals("admin")) {
+            gameTypeCreateButton.setVisibility(View.VISIBLE);
+        }
     }
 
 
@@ -248,32 +266,28 @@ public class DashboardActivity extends AppCompatActivity {
                 createNewGameType();
             }
         });
-    }
-
-    private void createNewGameType() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this)
-                .setTitle(DashboardActivity.this.getResources().getString(R.string.create_game_type_text));
-
-        LayoutInflater layoutInflater = DashboardActivity.this.getLayoutInflater();
-        View addGameTypeView = layoutInflater.inflate(R.layout.add_new_game_type, null);
-
-        gameTypeNameWrapper = addGameTypeView.findViewById(R.id.newGameTypeEditText);
-        selectGameTypeImageButton = addGameTypeView.findViewById(R.id.selectGameTypeImageButton);
-
-        selectGameTypeImageButton.setOnClickListener(new View.OnClickListener() {
+        roomCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= 22) {
-                    checkAndRequestForSelectImagePermission();
-                } else {
-                    selectImage();
-                    gameTypeToAdd = new GameType(uploadedResourcePath, gameTypeNameWrapper.getEditText().getText().toString());
-                }
+                createNewRoom();
             }
         });
+    }
 
-        builder.setView(addGameTypeView)
-                .setIcon(R.drawable.ic_game_type);
+    private void createNewRoom() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this)
+                .setTitle(DashboardActivity.this.getResources().getString(R.string.create_room_text));
+
+        LayoutInflater layoutInflater = DashboardActivity.this.getLayoutInflater();
+        View addRoomView = layoutInflater.inflate(R.layout.add_new_room, null);
+
+        GameTypeSpinnerAdapter gameTypeSpinnerAdapter = new GameTypeSpinnerAdapter(DashboardActivity.this, gameTypes);
+
+        Spinner gameTypeSpinner = addRoomView.findViewById(R.id.gameTypeSpinner);
+        gameTypeSpinner.setAdapter(gameTypeSpinnerAdapter);
+
+        builder.setView(addRoomView)
+                .setIcon(R.drawable.ic_room);
 
         builder.setPositiveButton(DashboardActivity.this.getResources().getString(R.string.add), new DialogInterface.OnClickListener() {
             @Override
@@ -298,6 +312,57 @@ public class DashboardActivity extends AppCompatActivity {
         builder.show();
     }
 
+    private void createNewGameType() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this)
+                .setTitle(DashboardActivity.this.getResources().getString(R.string.create_game_type_text));
+
+        LayoutInflater layoutInflater = DashboardActivity.this.getLayoutInflater();
+        View addGameTypeView = layoutInflater.inflate(R.layout.add_new_game_type, null);
+
+        gameTypeNameWrapper = addGameTypeView.findViewById(R.id.newGameTypeEditText);
+        selectGameTypeImageButton = addGameTypeView.findViewById(R.id.selectGameTypeImageButton);
+        gameTypeProgressBar = addGameTypeView.findViewById(R.id.gameTypeProgressBar);
+
+        // Referansı yeniliyoruz:
+        gameTypeToAdd = new GameType();
+
+        selectGameTypeImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (Build.VERSION.SDK_INT >= 22) {
+                    checkAndRequestForSelectImagePermission();
+                } else {
+                    selectImage();
+                }
+            }
+        });
+        builder.setView(addGameTypeView)
+                .setIcon(R.drawable.ic_game_type);
+
+        builder.setPositiveButton(DashboardActivity.this.getResources().getString(R.string.add), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                gameTypeToAdd.setName(gameTypeNameWrapper.getEditText().getText().toString());
+                // Veri tabanına GameType aktarma
+                if (gameTypeToAdd.getName() != null) {
+                    gameTypePath.push().setValue(gameTypeToAdd);
+                    Toast.makeText(DashboardActivity.this, R.string.game_type_added_successfully, Toast.LENGTH_SHORT).show();
+                }
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.setNegativeButton(DashboardActivity.this.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.show();
+    }
+
     private void checkAndRequestForSelectImagePermission() {
         String permission = Manifest.permission.READ_EXTERNAL_STORAGE;
         if (ContextCompat.checkSelfPermission(DashboardActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
@@ -308,7 +373,6 @@ public class DashboardActivity extends AppCompatActivity {
             }
         } else {
             selectImage();
-            gameTypeToAdd = new GameType(uploadedResourcePath, gameTypeNameWrapper.getEditText().getText().toString());
         }
     }
 
@@ -319,10 +383,10 @@ public class DashboardActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, DashboardActivity.this.getResources().getString(R.string.select_image)), PICK_IMAGE_REQUEST);
     }
 
-    public void uploadImage() {
+    public void uploadGameTypeImage() {
         if (resourceURI != null) {
             // Resim yüklemeye başlayınca progress bar aç
-            progressBar.setVisibility(View.VISIBLE);
+            gameTypeProgressBar.setVisibility(View.VISIBLE);
 
             // Resmin adını rastgele bir değer atıyoruz.
             String imageName = UUID.randomUUID().toString();
@@ -334,14 +398,15 @@ public class DashboardActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            // Bitince progress bar kapat
-                            progressBar.setVisibility(View.INVISIBLE);
-                            Toast.makeText(DashboardActivity.this, R.string.upload_successful, Toast.LENGTH_SHORT).show();
+                            // Dosya upload işlemi bitince indirme linki oluştur:
                             imageFile.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
-                                    // Resmi veri tabanına aktarırken kullanacağımız yolu ayarlıyoruz.
-                                    uploadedResourcePath = uri.toString();
+                                    // Bitince progress bar kapat
+                                    gameTypeProgressBar.setVisibility(View.INVISIBLE);
+
+                                    // Oyun tipini veri tabanına ekle:
+                                    gameTypeToAdd.setImage(uri.toString());
                                 }
                             });
                         }
@@ -349,7 +414,7 @@ public class DashboardActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             // Başarısız olursa da dialog kapatılır
-                            progressBar.setVisibility(View.INVISIBLE);
+                            gameTypeProgressBar.setVisibility(View.INVISIBLE);
                             Toast.makeText(DashboardActivity.this, R.string.upload_failed, Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -360,7 +425,6 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == PICK_IMAGE_REQUEST) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
@@ -369,7 +433,7 @@ public class DashboardActivity extends AppCompatActivity {
                         selectGameTypeImageButton.setText(R.string.selected_text);
                         selectGameTypeImageButton.setIcon(ContextCompat.getDrawable(DashboardActivity.this, R.drawable.ic_check));
                         selectGameTypeImageButton.setBackgroundColor(DashboardActivity.this.getResources().getColor(R.color.secondaryDarkColor, null));
-                        uploadImage();
+                        uploadGameTypeImage();
                     }
                 }
             }

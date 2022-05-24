@@ -26,7 +26,7 @@
         android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/small_margin"
         android:text="@string/username"
         android:textColor="@color/secondaryDarkColor"
         android:textSize="@dimen/default_font_size"
@@ -45,30 +45,6 @@
         app:layout_constraintStart_toStartOf="@+id/greeting"
         app:layout_constraintTop_toBottomOf="@+id/greeting" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/selectCityTextInput"
-        style="@style/ExposedDropdownMenu"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_vertical_margin"
-        android:layout_marginHorizontal="@dimen/huge_margin"
-        android:layout_marginTop="@dimen/huge_margin"
-        android:hint="@string/select_city"
-        android:textColor="@color/primaryTextColor"
-        android:textColorHint="@color/primaryTextColor"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/welcomeMessage">
-
-        <AutoCompleteTextView
-            android:id="@+id/selectCityAutoCompleteText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:forceDarkAllowed="false"
-            android:inputType="none"
-            android:textStyle="bold" />
-    </com.google.android.material.textfield.TextInputLayout>
-
     <LinearLayout
         android:id="@+id/mainDashboard"
         android:layout_width="match_parent"
@@ -79,7 +55,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectCityTextInput">
+        app:layout_constraintTop_toBottomOf="@+id/welcomeMessage">
 
         <TextView
             android:id="@+id/gameTypes"
@@ -167,6 +143,7 @@
             fab:fab_colorNormal="@color/secondaryColor"
             fab:fab_colorPressed="@color/secondaryLightColor"
             fab:fab_colorRipple="@color/secondaryDarkColor"
+            android:visibility="gone"
             fab:fab_label="@string/create_game_type_text"
             fab:fab_size="mini" />
 
@@ -182,14 +159,5 @@
             fab:fab_size="mini" />
 
     </com.github.clans.fab.FloatingActionMenu>
-
-    <ProgressBar
-        android:id="@+id/dashboardProgressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

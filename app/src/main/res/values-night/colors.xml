@@ -16,4 +16,5 @@
     <color name="primaryDarkColor">#000000</color>
     <color name="secondaryTextColor">#f9f8f3</color>
     <color name="primaryTextColor">#ffffff</color>
+    <color name="itemBackgroundColor">#121212</color>
 </resources>

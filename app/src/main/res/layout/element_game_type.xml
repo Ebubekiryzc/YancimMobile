@@ -10,7 +10,6 @@
 
     <ImageView
         android:id="@+id/elementGameTypeImage"
-
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_margin="16dp"
@@ -22,18 +21,15 @@
         app:layout_constraintVertical_bias="0.29" />
 
     <TextView
-
         android:id="@+id/elementGameTypeText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-
         android:gravity="center"
         android:lines="2"
         android:text="title"
         android:textAlignment="center"
-        android:textColor="#000000"
+        android:textColor="@color/primaryTextColor"
         android:textSize="14sp"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
